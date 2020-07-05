@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import data from "../constants";
 import AdressesComponent from "../components/AdressesComponent";
-import { Modal } from "react-bootstrap";
+import { Modal, Button } from "react-bootstrap";
 
 import {
   faTrashAlt,
@@ -32,6 +32,11 @@ const Cart = (props) => {
   const [payingId, setPayingId] = useState(0);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+
+  const [showCoupon, setShowCoupon] = useState(false);
+
+  const handleCloseCoupon = () => setShowCoupon(false);
+  const handleShowCoupon = () => setShowCoupon(true);
 
   if (payingId != 0 && paying == 1) {
     const checkk = () => {
@@ -84,8 +89,9 @@ const Cart = (props) => {
   var total = 0;
   for (let i = 0; i <= props.cart.length - 1; i++) {
     total += props.cart[i].price;
-    // console.log(props.cart[i]);
-    // console.log(total);
+  }
+  for (let i = 0; i <= props.sauces.length - 1; i++) {
+    total += props.sauces[i].price;
   }
 
   const checkData = () => {
@@ -128,7 +134,8 @@ const Cart = (props) => {
     console.log("deliveryType: " + deliveryType);
     console.log("time: " + time);
     console.log("deliveryTime: " + deliveryTime);
-
+    console.log("sauces: ");
+    console.log(props.sauces);
     // Sauces to be added!
     const products = props.cart;
     console.log(props.cart);
@@ -152,6 +159,7 @@ const Cart = (props) => {
         postcode,
         place,
         products: props.cart,
+        sauces: props.sauces,
       })
       .then((res) => {
         console.log(res);
@@ -230,6 +238,17 @@ const Cart = (props) => {
     localStorage.setItem("cart", JSON.stringify(newProds));
   };
 
+  const removeSauce = (index) => {
+    let newSauces = props.sauces.filter((sauce, i) => {
+      if (i == index) {
+        return false;
+      }
+      return true;
+    });
+    props.setSauces(newSauces);
+    localStorage.setItem("sauces", JSON.stringify(newSauces));
+  };
+
   return (
     <div
       className="col-md-3 col-sm-0 col-xs-0  d-none d-sm-none  d-md-block"
@@ -301,6 +320,100 @@ const Cart = (props) => {
           </div>
         );
       })}
+      {props.sauces.map((sauce, index) => {
+        return (
+          <div>
+            <hr
+              style={{
+                display: "block",
+                height: "1px",
+                border: "0",
+                borderTop: "1px solid #ccc",
+                margin: "0",
+                marginTop: "-2px",
+                padding: "0",
+              }}
+            />
+            <h2
+              className="text-left"
+              style={{
+                fontSize: "18px",
+                color: "white",
+                padding: "20px 20px 10px 20px",
+              }}
+            >
+              <FontAwesomeIcon
+                icon={faTrashAlt}
+                style={{ marginRight: "20px", cursor: "pointer" }}
+                onClick={() => removeSauce(index)}
+              />
+              {sauce.name}
+              <b className="float-right">€{sauce.price}</b>
+            </h2>
+            <hr
+              style={{
+                display: "block",
+                height: "1px",
+                border: "0",
+                borderTop: "1px solid #ccc",
+                margin: "0",
+                padding: "0",
+              }}
+            />
+          </div>
+        );
+      })}
+
+      <span
+        style={{
+          position: "absolute",
+          color: "white",
+          marginLeft: "-60px",
+          marginTop: "15px",
+          color: "#f2a83b",
+          cursor: "pointer",
+        }}
+        onClick={handleShowCoupon}
+      >
+        Coupon?
+      </span>
+
+      <Modal show={showCoupon} onHide={handleCloseCoupon}>
+        <Modal.Header
+          closeButton
+          style={{ backgroundColor: "#1C1C1C", border: "none", color: "white" }}
+        >
+          <Modal.Title>Add coupon</Modal.Title>
+        </Modal.Header>
+        <Modal.Body
+          style={{ backgroundColor: "#1C1C1C", border: "none", color: "white" }}
+        >
+          <div className="form-group">
+            <label>Coupon code:</label>
+            <input
+              className="form-control"
+              name="coupon"
+              required
+              placeholder="code"
+            />
+          </div>
+        </Modal.Body>
+        <Modal.Footer
+          style={{ backgroundColor: "#1C1C1C", border: "none", color: "white" }}
+        >
+          <Button variant="secondary" onClick={handleCloseCoupon}>
+            Close
+          </Button>
+          <Button
+            variant="primary"
+            style={{ backgroundColor: "#F2A83B", border: "1px #F2A83B" }}
+            onClick={handleCloseCoupon}
+          >
+            Add coupon
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
       <div
         className="float-right text-white"
         style={{

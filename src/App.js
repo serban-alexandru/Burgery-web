@@ -37,6 +37,8 @@ function App() {
   const savedAuth = localStorage.getItem("auth");
   const savedToken = localStorage.getItem("token");
   const savedCart = JSON.parse(localStorage.getItem("cart"));
+  const savedSauces = JSON.parse(localStorage.getItem("sauces"));
+
   const loggedUser = JSON.parse(localStorage.getItem("user"));
   const savedType = localStorage.getItem("type");
   const savedTime = localStorage.getItem("time");
@@ -45,6 +47,8 @@ function App() {
   const [isAuth, setAuth] = useState(savedAuth ? savedAuth : false);
   const [token, setToken] = useState(savedToken ? savedToken : "");
   const [cart, setCart] = useState(savedCart ? savedCart : []);
+  const [sauces, setSauces] = useState(savedSauces ? savedSauces : []);
+
   const [user, setUser] = useState(loggedUser ? loggedUser : {});
   const [show, setShow] = useState(false);
   const [paymentType, setPaymentType] = useState("");
@@ -288,7 +292,12 @@ function App() {
                 />
               </Route>
               <Route path="/home">
-                <Home cart={cart} setCart={setCart} />
+                <Home
+                  cart={cart}
+                  setCart={setCart}
+                  sauces={sauces}
+                  setSauces={setSauces}
+                />
               </Route>
               <Route path="/">
                 <LandingPage />
@@ -309,6 +318,8 @@ function App() {
           adress={adress}
           setAdress={setAdress}
           user={user}
+          sauces={sauces}
+          setSauces={setSauces}
         />
       </div>
       <Button

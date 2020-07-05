@@ -1,5 +1,5 @@
 const data = {
-  //   baseUrl: "http://burgery.online",
+  // baseUrl: "http://burgery.online",
   baseUrl: "http://localhost/burgery/public",
 };
 
