@@ -37,6 +37,31 @@ const Cart = (props) => {
 
   const handleCloseCoupon = () => setShowCoupon(false);
   const handleShowCoupon = () => setShowCoupon(true);
+  const [couponCode, setCouponCode] = useState("");
+
+  const changeCoupon = (e) => {
+    setCouponCode(e.target.value);
+  };
+
+  const checkCoupon = () => {
+    if (couponCode) {
+      axios
+        .post(data.baseUrl + "/api/check_coupon", {
+          code: couponCode,
+        })
+        .then((res) => {
+          props.setCoupon(res.data.coupon);
+          alert("Coupon added");
+        })
+        .catch((err) => {
+          alert("Invalid coupon code");
+        });
+
+      return;
+    } else {
+      alert("Please enter a coupon code!");
+    }
+  };
 
   if (payingId != 0 && paying == 1) {
     const checkk = () => {
@@ -48,6 +73,9 @@ const Cart = (props) => {
             setPayingId(0);
             clearInterval(checkorder);
             alert("Thank you for your order");
+            localStorage.removeItem("cart");
+            localStorage.removeItem("sauces");
+            window.location.reload();
           }
         })
         .catch((err) => {});
@@ -92,6 +120,16 @@ const Cart = (props) => {
   }
   for (let i = 0; i <= props.sauces.length - 1; i++) {
     total += props.sauces[i].price;
+  }
+
+  if (props.coupon && props.coupon.min_total) {
+    if (total >= props.coupon.min_total) {
+      if (props.coupon.type == 0) {
+        total -= props.coupon.value;
+      } else {
+        total -= (props.coupon.value / 100) * total;
+      }
+    }
   }
 
   const checkData = () => {
@@ -160,6 +198,7 @@ const Cart = (props) => {
         place,
         products: props.cart,
         sauces: props.sauces,
+        coupon_id: props.coupon.id,
       })
       .then((res) => {
         console.log(res);
@@ -174,6 +213,9 @@ const Cart = (props) => {
         } else {
           // pay on delivery => redirect to thank you page / alert smth?
           alert("Thank you for your order!");
+          localStorage.removeItem("cart");
+          localStorage.removeItem("sauces");
+          window.location.reload();
         }
       })
       .catch((err) => {
@@ -364,6 +406,50 @@ const Cart = (props) => {
         );
       })}
 
+      {props.coupon.code ? (
+        <div>
+          <hr
+            style={{
+              display: "block",
+              height: "1px",
+              border: "0",
+              borderTop: "1px solid #ccc",
+              margin: "0",
+              marginTop: "-2px",
+              padding: "0",
+            }}
+          />
+          <h2
+            className="text-left"
+            style={{
+              fontSize: "18px",
+              color: "#F2A83B",
+              padding: "20px 20px 10px 20px",
+            }}
+          >
+            "{props.coupon.code}"
+            <b className="float-right">
+              {props.coupon.type == 0
+                ? "€" + props.coupon.value
+                : "%" + props.coupon.value}{" "}
+              (€{props.coupon.min_total}+)
+            </b>
+          </h2>
+          <hr
+            style={{
+              display: "block",
+              height: "1px",
+              border: "0",
+              borderTop: "1px solid #ccc",
+              margin: "0",
+              padding: "0",
+            }}
+          />
+        </div>
+      ) : (
+        ""
+      )}
+
       <span
         style={{
           position: "absolute",
@@ -395,6 +481,7 @@ const Cart = (props) => {
               name="coupon"
               required
               placeholder="code"
+              onChange={changeCoupon}
             />
           </div>
         </Modal.Body>
@@ -407,9 +494,9 @@ const Cart = (props) => {
           <Button
             variant="primary"
             style={{ backgroundColor: "#F2A83B", border: "1px #F2A83B" }}
-            onClick={handleCloseCoupon}
+            onClick={checkCoupon}
           >
-            Add coupon
+            Check coupon
           </Button>
         </Modal.Footer>
       </Modal>

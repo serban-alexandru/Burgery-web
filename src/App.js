@@ -38,6 +38,7 @@ function App() {
   const savedToken = localStorage.getItem("token");
   const savedCart = JSON.parse(localStorage.getItem("cart"));
   const savedSauces = JSON.parse(localStorage.getItem("sauces"));
+  const [coupon, setCoupon] = useState({});
 
   const loggedUser = JSON.parse(localStorage.getItem("user"));
   const savedType = localStorage.getItem("type");
@@ -73,13 +74,6 @@ function App() {
   };
 
   const logout = () => {
-    setToken("");
-    setAuth(false);
-    localStorage.removeItem("token");
-    localStorage.removeItem("auth");
-    localStorage.removeItem("user");
-    // localStorage.setItem('token', '');
-    // localStorage.setAuth(false);
     localStorage.clear();
     window.location.replace("/login");
   };
@@ -279,6 +273,8 @@ function App() {
                   cart={cart}
                   setCart={setCart}
                   user={user}
+                  coupon={coupon}
+                  setCoupon={setCoupon}
                 />
               </Route>
               <Route path="/register">
@@ -320,6 +316,8 @@ function App() {
           user={user}
           sauces={sauces}
           setSauces={setSauces}
+          coupon={coupon}
+          setCoupon={setCoupon}
         />
       </div>
       <Button

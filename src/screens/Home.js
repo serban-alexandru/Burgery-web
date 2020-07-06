@@ -295,7 +295,7 @@ const Home = (props) => {
                                     border: "1px #F2A83B",
                                   }}
                                 >
-                                  Add sauces
+                                  Add product
                                 </Button>
                               </Modal.Footer>
                             </Modal>
